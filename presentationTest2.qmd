@@ -72,4 +72,112 @@ plt.show()
 
 
 ## Network visualization
-nothing here yet
+```{python}
+import json
+import html
+import numpy as np
+import networkx as nx
+from IPython.display import HTML, display
+
+# --- Network definition: (source, target, flow weight) ---
+edges = [("A", "B", 5), ("A", "C", 2), ("B", "D", 4),
+         ("C", "D", 1), ("B", "C", 3),
+         ("D", "E", 2), ("E", "F", 3), ("F", "A", 1)]
+G = nx.DiGraph()
+G.add_weighted_edges_from(edges)
+pos = nx.spring_layout(G, seed=42, k=2, iterations=50)
+
+# --- Normalise node coordinates to [0, 1] ---
+xs = np.array([pos[n][0] for n in G.nodes()])
+ys = np.array([pos[n][1] for n in G.nodes()])
+x_min, x_max, y_min, y_max = xs.min(), xs.max(), ys.min(), ys.max()
+
+def norm(v, lo, hi):
+    return 0.5 if hi == lo else (v - lo) / (hi - lo)
+
+nodes = [{"label": str(n),
+          "x": float(norm(pos[n][0], x_min, x_max)),
+          "y": float(norm(pos[n][1], y_min, y_max))}
+         for n in G.nodes()]
+
+edge_list = [{"x0": float(norm(pos[u][0], x_min, x_max)),
+              "y0": float(norm(pos[u][1], y_min, y_max)),
+              "x1": float(norm(pos[v][0], x_min, x_max)),
+              "y1": float(norm(pos[v][1], y_min, y_max)),
+              "w": int(w)}
+             for u, v, w in edges]
+
+data_json = json.dumps({"nodes": nodes, "edges": edge_list})
+
+# --- Self-contained animated canvas, isolated inside an iframe ---
+inner = """<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; }
+  canvas { display: block; background: transparent; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const DATA = __DATA__;
+const W = 700, H = 500, PAD = 60;
+const SPEED = 0.25;          // edge traversals per second
+const DOT_R = 5, NODE_R = 14;
+const dpr = window.devicePixelRatio || 1;
+const cv = document.getElementById('c');
+cv.style.width = W + 'px';
+cv.style.height = H + 'px';
+cv.width = W * dpr;
+cv.height = H * dpr;
+const ctx = cv.getContext('2d');
+ctx.scale(dpr, dpr);
+function px(x){ return PAD + x * (W - 2*PAD); }
+function py(y){ return H - (PAD + y * (H - 2*PAD)); }
+function frame(now){
+  const t = now / 1000;
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = '#d0d0d0';
+  ctx.lineWidth = 2;
+  for (const e of DATA.edges){
+    ctx.beginPath();
+    ctx.moveTo(px(e.x0), py(e.y0));
+    ctx.lineTo(px(e.x1), py(e.y1));
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#e63946';
+  for (const e of DATA.edges){
+    const n = e.w;
+    for (let i = 0; i < n; i++){
+      const phase = i / n;
+      const f = (t * SPEED + phase) % 1;
+      const x = px(e.x0 + f * (e.x1 - e.x0));
+      const y = py(e.y0 + f * (e.y1 - e.y0));
+      ctx.beginPath();
+      ctx.arc(x, y, DOT_R, 0, 2*Math.PI);
+      ctx.fill();
+    }
+  }
+  for (const nd of DATA.nodes){
+    const x = px(nd.x), y = py(nd.y);
+    ctx.fillStyle = '#222831';
+    ctx.beginPath();
+    ctx.arc(x, y, NODE_R, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(nd.label, x, y - NODE_R - 6);
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>"""
+
+inner = inner.replace("__DATA__", data_json)
+iframe = ('<iframe style="width:700px;height:500px;border:none;background:transparent;" '
+          'srcdoc="' + html.escape(inner, quote=True) + '"></iframe>')
+display(HTML(iframe))
+```
