@@ -1,0 +1,71 @@
+---
+title: "Presentation Test 2"
+subtitle: "A Tale of a Pretty Thesis"
+author: "Radu Diaconescu"
+format: 
+    revealjs: 
+        theme: [serif, custom.scss]
+        toc: true
+jupyter: max_entropy_radu_conda
+---
+
+## First content slide
+
+What a slide!
+
+## Second content slide
+
+$\frac{dp}{dt} = a + b$
+
+## This guy can even do plots!
+
+![](images/regions_2019_scatter.png){fig-align="center"}
+
+## The python one!
+
+```{python}
+#| code-line-numbers: "|6|9"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+r = np.arange(0, 2, 0.01)
+theta = 12 * np.pi * r
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+ax.grid(True)
+plt.show()
+```
+
+## Plotly
+
+```{python}
+import plotly.express as px
+import plotly.io as pio
+gapminder = px.data.gapminder()
+gapminder2007 = gapminder.query("year == 2007")
+fig = px.scatter(gapminder2007, 
+                 x="gdpPercap", y="lifeExp", color="continent", 
+                 size="pop", size_max=60,
+                 hover_name="country")
+fig.show()
+```
+
+## Matplotlib fancy
+
+```{python}
+#| echo: true
+#| code-line-numbers: "|6|9"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+ax.grid(True)
+plt.show()
+```
