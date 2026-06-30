@@ -1,0 +1,122 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Presentation Test 2\"\n",
+        "subtitle: \"A Tale of a Pretty Thesis\"\n",
+        "author: \"Radu Diaconescu\"\n",
+        "format: \n",
+        "    revealjs: \n",
+        "        theme: [serif, custom.scss]\n",
+        "        toc: true\n",
+        "jupyter: max_entropy_radu_conda\n",
+        "---\n",
+        "\n",
+        "## First content slide\n",
+        "\n",
+        "What a slide!\n",
+        "\n",
+        "## Second content slide\n",
+        "\n",
+        "$\\frac{dp}{dt} = a + b$\n",
+        "\n",
+        "## This guy can even do plots!\n",
+        "\n",
+        "![](images/regions_2019_scatter.png){fig-align=\"center\"}\n",
+        "\n",
+        "## The python one!"
+      ],
+      "id": "8a545f34"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| code-line-numbers: \"|6|9\"\n",
+        "\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "r = np.arange(0, 2, 0.01)\n",
+        "theta = 12 * np.pi * r\n",
+        "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\n",
+        "ax.plot(theta, r)\n",
+        "ax.set_rticks([0.5, 1, 1.5, 2])\n",
+        "ax.grid(True)\n",
+        "plt.show()"
+      ],
+      "id": "0d3cc998",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Plotly"
+      ],
+      "id": "f823bfc2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import plotly.express as px\n",
+        "import plotly.io as pio\n",
+        "gapminder = px.data.gapminder()\n",
+        "gapminder2007 = gapminder.query(\"year == 2007\")\n",
+        "fig = px.scatter(gapminder2007, \n",
+        "                 x=\"gdpPercap\", y=\"lifeExp\", color=\"continent\", \n",
+        "                 size=\"pop\", size_max=60,\n",
+        "                 hover_name=\"country\")\n",
+        "fig.show()"
+      ],
+      "id": "e1b65411",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Matplotlib fancy"
+      ],
+      "id": "82f0add7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| code-line-numbers: \"|6|9\"\n",
+        "\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "r = np.arange(0, 2, 0.01)\n",
+        "theta = 2 * np.pi * r\n",
+        "fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})\n",
+        "ax.plot(theta, r)\n",
+        "ax.set_rticks([0.5, 1, 1.5, 2])\n",
+        "ax.grid(True)\n",
+        "plt.show()"
+      ],
+      "id": "1983229a",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "max_entropy_radu_conda",
+      "language": "python",
+      "display_name": "Max Ent Radu Env",
+      "path": "/home/jder/.local/share/jupyter/kernels/max_entropy_radu_conda"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
